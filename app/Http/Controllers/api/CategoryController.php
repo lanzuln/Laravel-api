@@ -54,7 +54,9 @@ class CategoryController extends Controller {
      * Display the specified resource.
      */
     public function show(string $id) {
+
         $category = Category::find($id);
+
         if (!$category) {
             return response()->json([
                 'status' => false,
@@ -74,7 +76,39 @@ class CategoryController extends Controller {
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id) {
-        //
+
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No category found on this id',
+                'errors' => '',
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:categories,name',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $category = Category::where('id',$category->id)->update([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'category updated successfull',
+        ]);
     }
 
     /**
