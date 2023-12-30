@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Models\Category;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller {
     /**
@@ -50,13 +50,24 @@ class CategoryController extends Controller {
         ]);
     }
 
-
-
     /**
      * Display the specified resource.
      */
     public function show(string $id) {
-        //
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No category found on this id',
+                'errors' => '',
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $category,
+        ]);
     }
 
     /**
