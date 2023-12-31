@@ -2,52 +2,38 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\SuccessResource;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\CategoryStoreRequest;
 
 class CategoryController extends Controller {
     /**
      * Display a listing of the resource.
      */
     public function index() {
-        $category = Category::latest('id')->get();
-        return response()->json([
-            'status' => true,
-            'message' => "Data retrived sussessfull",
-            'data' => $category,
+        $categories = Category::latest()->get();
+
+        return new SuccessResource([
+            // 'message' => 'All Category',
+            'data' => $categories
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:categories',
-        ]);
+    public function store(CategoryStoreRequest $request) {
+        return $formData = $request->validated();
 
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'error',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+        $formData['slug'] = Str::slug($formData['name']);
 
-        $category = Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-        ]);
+        Category::create($formData);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'category created successfully',
-            'data' => $category,
-        ]);
+        return (new SuccessResource(['message' => 'Successfully Category Created.']))->response()->setStatusCode(201);
     }
 
     /**

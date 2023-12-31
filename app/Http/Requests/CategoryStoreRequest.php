@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Resources\ErrorResource;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CategoryStoreRequest extends FormRequest
 {
@@ -11,18 +14,31 @@ class CategoryStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
+    }
+/**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'name' => 'required|string|unique:categories',
+        ];
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Handle a failed validation attempt.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function rules(): array
+    protected function failedValidation(Validator $validator)
     {
-        return [
-            //
-        ];
+        $response = (new ErrorResource($validator->errors()))->response()->setStatusCode(422);
+        throw new ValidationException($validator, $response);
     }
 }
