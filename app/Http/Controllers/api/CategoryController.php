@@ -18,7 +18,7 @@ class CategoryController extends Controller {
         $categories = Category::latest()->get();
 
         return new SuccessResource([
-            // 'message' => 'All Category',
+            'message' => 'All Category',
             'data' => $categories
         ]);
     }
@@ -27,11 +27,14 @@ class CategoryController extends Controller {
      * Store a newly created resource in storage.
      */
     public function store(CategoryStoreRequest $request) {
-        return $formData = $request->validated();
+         $formData = $request->validated();
 
-        $formData['slug'] = Str::slug($formData['name']);
+        // $formData['slug'] = Str::slug($formData['name']);
 
-        Category::create($formData);
+        Category::create([
+            'name'=>$formData['name'],
+            'slug'=>Str::slug($formData['name']),
+        ]);
 
         return (new SuccessResource(['message' => 'Successfully Category Created.']))->response()->setStatusCode(201);
     }
