@@ -2,41 +2,52 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Models\Category;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SuccessResource;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\CategoryStoreRequest;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller {
     /**
      * Display a listing of the resource.
      */
     public function index() {
-        $categories = Category::latest()->get();
-
-        return new SuccessResource([
-            'message' => 'All Category',
-            'data' => $categories
+        $category = Category::latest('id')->get();
+        return response()->json([
+            'status' => true,
+            'message' => "Data retrived sussessfull",
+            'data' => $category,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CategoryStoreRequest $request) {
-         $formData = $request->validated();
-
-        // $formData['slug'] = Str::slug($formData['name']);
-
-        Category::create([
-            'name'=>$formData['name'],
-            'slug'=>Str::slug($formData['name']),
+    public function store(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|unique:categories',
         ]);
 
-        return (new SuccessResource(['message' => 'Successfully Category Created.']))->response()->setStatusCode(201);
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $category = Category::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'category created successfully',
+            'data' => $category,
+        ]);
     }
 
     /**
