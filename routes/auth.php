@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\api\auth\LoginController;
-use App\Http\Controllers\api\auth\LogoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\auth\LoginController;
+use App\Http\Controllers\api\auth\LogoutController;
+use App\Http\Controllers\api\auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [LogoutController::class, 'logout']);
 });
 
+Route::post('register', [RegisterController::class, 'register']);
 Route::post('login', [LoginController::class, 'login']);
