@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmailVerifyController;
 use App\Http\Controllers\api\auth\LoginController;
 use App\Http\Controllers\api\auth\LogoutController;
 use App\Http\Controllers\api\auth\RegisterController;
@@ -18,13 +19,14 @@ use App\Http\Controllers\api\auth\PasswordResetController;
 |
  */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [LogoutController::class, 'logout']);
+    Route::post('verify/email/send', [EmailVerifyController::class, 'verifyEmailSend']);
+    Route::post('verify/email', [EmailVerifyController::class, 'verifyEmail'])->name('email.verify');
 });
 
 Route::post('register', [RegisterController::class, 'register']);
 Route::post('login', [LoginController::class, 'login']);
-Route::post('reset/email', [PasswordResetController::class, 'resetPasswordLink'])->name('reset.Password.Link');
+Route::post('reset/email/send', [PasswordResetController::class, 'resetPasswordLink']);
+Route::post('reset/password', [PasswordResetController::class, 'resetPassword'])->middleware('signed')->name('reset.Password.Link');
