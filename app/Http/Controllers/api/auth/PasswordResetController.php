@@ -18,6 +18,8 @@ class PasswordResetController extends Controller
         // $url= str_replace(env('APP_URL'), 'https://laravel.com/',$url);
         // dd($url);
 
+        // $url='https://laravel.com/';
+
         Mail::to($request->email)->send(new ResetPasswordMail($url));
 
         return response()->json([
